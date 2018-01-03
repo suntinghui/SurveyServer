@@ -969,6 +969,23 @@ class ProjectTask(models.Model):
     insert_time = models.DateTimeField(blank=True, null=True)
     engineroom_type = models.CharField(max_length=20, blank=True, null=True)
 
+    def toJSON(self):
+        fields = []
+        for field in self._meta.fields:
+            fields.append(field.name)
+    
+        d = {}
+        for attr in fields:
+            if isinstance(getattr(self, attr),datetime.datetime):
+                d[attr] = getattr(self, attr).strftime('%Y-%m-%d %H:%M:%S')
+            elif isinstance(getattr(self, attr),datetime.date):
+                d[attr] = getattr(self, attr).strftime('%Y-%m-%d')
+            else:
+                d[attr] = getattr(self, attr)
+    
+        import json
+        return json.dumps(d)
+
     class Meta:
         managed = False
         db_table = 'project_task'
