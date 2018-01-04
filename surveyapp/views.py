@@ -52,7 +52,9 @@ def projectList(request):
 
         resp = {'respCode': respCode, 'respMsg': respMsg, 'proList':list(vs)}
 
-    except:
+    except Exception as e:
+        print(e)
+
         respCode = '04'
         respMsg = '未知错误，请重试'
         resp = {'respCode': respCode, 'respMsg': respMsg}
@@ -86,7 +88,9 @@ def getDictList(request):
         respMsg = '查询成功'
         resp = {'respCode': respCode, 'respMsg': respMsg, 'dictData':dictData}
 
-    except:
+    except Exception as e:
+        print(e)
+
         respCode = '04'
         respMsg = '未知错误，请重试'
         resp = {'respCode': respCode, 'respMsg': respMsg}
@@ -129,7 +133,9 @@ def taskList(request):
 
         resp = {'respCode': respCode, 'respMsg': respMsg, 'taskList':taskList}
         
-    except:
+    except Exception as e:
+        print(e)
+
         respCode = '04'
         respMsg = '未知错误，请重试'
         resp = {'respCode': respCode, 'respMsg': respMsg}
@@ -187,7 +193,9 @@ def updateEngineroomInfo(request):
         respCode = '00'
         respMsg = '修改成功'
 
-    except:
+    except Exception as e:
+        print(e)
+
         respCode = '04'
         respMsg = '修改失败'
 
@@ -212,12 +220,329 @@ def geospatialList(request):
         resp = {'respCode': respCode, 'respMsg': respMsg, 'buildList':list(vs)}
 
 
-    except:
+    except Exception as e:
+        print(e)
+
         respCode = '04'
         respMsg = '未知错误，请重试'
         resp = {'respCode': respCode, 'respMsg': respMsg}
 
     return JsonResponse(resp)
+
+# 查询机架列表
+def rackList(request):
+    print("rackList:", request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+
+    respCode = '04'
+    respMsg = '未知错误，请重试'
+
+    try:
+        vs = models.Rack.objects.filter(engineroom_id=engineroom_id).values()
+
+        respCode = '00'
+        respMsg = '查询成功'
+        resp = {'respCode': respCode, 'respMsg': respMsg, 'rackList':list(vs)}
+
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '查询失败'
+        resp = {'respCode': respCode, 'respMsg': respMsg}
+
+    return JsonResponse(resp)
+
+# 添加机架信息
+def addRackInfo(request):
+    print('addRackInfo:', request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+    
+    respCode = "04"
+    respMsg = '未知错误，请重试'
+
+    try:
+        # 表中不存在userName这一字段，所以必须要将其除
+        param.pop("userName")
+
+        rack = models.Rack.objects.create(**param)
+        respCode = "00"
+        respMsg = '添加成功'
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '添加失败'
+        
+    resp = {'respCode': respCode, 'respMsg': respMsg}
+    return JsonResponse(resp)
+
+# 更新机架信息
+def updateRackInfo(request):
+    print('updateRackInfo:', request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+    
+    try:
+        obj = models.Rack.objects.get(id=param["id"])
+
+        for key, value in param.items():
+            if hasattr(obj, key):
+                setattr(obj, key, value)
+
+        obj.save()
+
+        respCode = '00'
+        respMsg = '修改成功'
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '修改失败'
+
+    resp = {'respCode': respCode, 'respMsg': respMsg}
+    return JsonResponse(resp)
+
+
+# 删除机架信息
+def deleteRackInfo(request):
+    print('deleteRackInfo:', request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+    
+    try:
+        models.Rack.objects.filter(id=param["id"]).delete()
+
+        respCode = '00'
+        respMsg = '删除成功'
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '删除失败'
+
+    resp = {'respCode': respCode, 'respMsg': respMsg}
+
+    return JsonResponse(resp)
+
+# 查询主设备列表
+def queryFacility(request):
+    print("queryFacility:", request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+
+    respCode = '04'
+    respMsg = '未知错误，请重试'
+
+    try:
+        vs = models.Facility.objects.filter(engineroom_id=engineroom_id).values()
+
+        respCode = '00'
+        respMsg = '查询成功'
+        resp = {'respCode': respCode, 'respMsg': respMsg, 'list':list(vs)}
+
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '查询失败'
+        resp = {'respCode': respCode, 'respMsg': respMsg}
+
+    return JsonResponse(resp)
+
+# 添加主设备
+def addFacility(request):
+    print('addFacility:', request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+    
+    respCode = "04"
+    respMsg = '未知错误，请重试'
+
+    try:
+        # 表中不存在userName这一字段，所以必须要将其除
+        param.pop("userName")
+
+        facility = models.Facility.objects.create(**param)
+        respCode = "00"
+        respMsg = '添加成功'
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '添加失败'
+        
+    resp = {'respCode': respCode, 'respMsg': respMsg}
+    return JsonResponse(resp)
+
+# 修改主设备
+def updateFacility(request):
+    print('updateFacility:', request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+    
+    try:
+        obj = models.Facility.objects.get(id=param["id"])
+
+        for key, value in param.items():
+            if hasattr(obj, key):
+                setattr(obj, key, value)
+
+        obj.save()
+
+        respCode = '00'
+        respMsg = '修改成功'
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '修改失败'
+
+    resp = {'respCode': respCode, 'respMsg': respMsg}
+    return JsonResponse(resp)
+    
+
+# 删除主设备
+def deleteFacility(request):
+    print('deleteFacility:', request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+    
+    try:
+        models.Facility.objects.filter(id=param["id"]).delete()
+
+        respCode = '00'
+        respMsg = '删除成功'
+
+    except:
+        respCode = '04'
+        respMsg = '删除失败'
+
+    resp = {'respCode': respCode, 'respMsg': respMsg}
+
+    return JsonResponse(resp)
+
+
+def queryAirConditioning(request):
+    print("queryAirConditioning:", request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+
+    respCode = '04'
+    respMsg = '未知错误，请重试'
+
+    try:
+        vs = models.Airconditioning.objects.filter(engineroom_id=engineroom_id).values()
+
+        respCode = '00'
+        respMsg = '查询成功'
+        resp = {'respCode': respCode, 'respMsg': respMsg, 'list':list(vs)}
+
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '查询失败'
+        resp = {'respCode': respCode, 'respMsg': respMsg}
+
+    return JsonResponse(resp)
+
+
+def addAirConditioning(request):
+    print('addAirConditioning:', request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+    
+    respCode = "04"
+    respMsg = '未知错误，请重试'
+
+    try:
+        # 表中不存在userName这一字段，所以必须要将其除
+        param.pop("userName")
+
+        facility = models.Airconditioning.objects.create(**param)
+        respCode = "00"
+        respMsg = '添加成功'
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '添加失败'
+        
+    resp = {'respCode': respCode, 'respMsg': respMsg}
+    return JsonResponse(resp)
+
+
+def updateAirConditioning(request):
+    print('updateAirConditioning:', request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+    
+    try:
+        obj = models.Airconditioning.objects.get(id=param["id"])
+
+        for key, value in param.items():
+            if hasattr(obj, key):
+                setattr(obj, key, value)
+
+        obj.save()
+
+        respCode = '00'
+        respMsg = '修改成功'
+
+    except Exception as e:
+        print(e)
+
+        respCode = '04'
+        respMsg = '修改失败'
+
+    resp = {'respCode': respCode, 'respMsg': respMsg}
+    return JsonResponse(resp)
+
+
+def deleteAirConditioning(request):
+    print('deleteAirConditioning:', request.body)
+    param = json.loads(request.body)
+    userName = param['userName']
+    engineroom_id = param['engineroom_id']
+    
+    try:
+        models.Airconditioning.objects.filter(id=param["id"]).delete()
+
+        respCode = '00'
+        respMsg = '删除成功'
+
+    except:
+        respCode = '04'
+        respMsg = '删除失败'
+
+    resp = {'respCode': respCode, 'respMsg': respMsg}
+
+    return JsonResponse(resp)
+
+        
 
 
 
