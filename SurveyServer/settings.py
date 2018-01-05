@@ -25,7 +25,7 @@ SECRET_KEY = 'unusp^i(y-pnc_qk-8@454o$%#i*n8rrfd+ib71q=oyy+z3n56'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.3.82', '192.168.3.22']
+ALLOWED_HOSTS = ['192.168.3.82', '192.168.3.22','192.168.3.5']
 
 
 # Application definition
